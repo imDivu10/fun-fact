@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<!-- saved from url=(0071)https://friendly-space-fishstick-gxq6594qq5xw294jp-5501.app.github.dev/ -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fun Facts Quiz</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 700px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            background: #e0e0e0;
+            height: 8px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .score-display {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 15px;
+            font-size: 0.95em;
+        }
+
+        .score-item {
+            color: #666;
+        }
+
+        .score-item span {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .quiz-container {
+            display: none;
+        }
+
+        .quiz-container.active {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fact-box {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border-left: 5px solid #667eea;
+        }
+
+        .fact-text {
+            font-size: 1.4em;
+            color: #333;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+
+        .question {
+            font-size: 1.1em;
+            color: #666;
+            margin-top: 15px;
+            font-style: italic;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 18px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-true {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn-true:hover:not(:disabled) {
+            background: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        .btn-false {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn-false:hover:not(:disabled) {
+            background: #da190b;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(244, 67, 54, 0.4);
+        }
+
+        .btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .feedback {
+            display: none;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 1.05em;
+            font-weight: 600;
+        }
+
+        .feedback.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        .feedback.correct {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #4CAF50;
+        }
+
+        .feedback.incorrect {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f44336;
+        }
+
+        .explanation {
+            margin-top: 15px;
+            font-size: 0.95em;
+            font-weight: 400;
+            line-height: 1.6;
+        }
+
+        .next-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            width: 100%;
+            transition: all 0.3s ease;
+            display: none;
+        }
+
+        .next-btn.show {
+            display: block;
+        }
+
+        .next-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .start-container {
+            text-align: center;
+        }
+
+        .start-container.hidden {
+            display: none;
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 18px 50px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.2em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-top: 30px;
+        }
+
+        .start-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .results-container {
+            display: none;
+            text-align: center;
+        }
+
+        .results-container.active {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        .final-score {
+            font-size: 3em;
+            font-weight: bold;
+            color: #667eea;
+            margin: 30px 0;
+        }
+
+        .results-message {
+            font-size: 1.3em;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .restart-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .restart-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .emoji {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .fact-text {
+                font-size: 1.1em;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧠 Fun Facts Quiz</h1>
+            <p class="subtitle">Guess if each statement is True or False!</p>
+        </div>
+
+        <!-- Start Screen -->
+        <div class="start-container hidden">
+            <div style="font-size: 4em; margin-bottom: 20px;">🎮</div>
+            <p style="font-size: 1.2em; color: #666; margin-bottom: 20px;">
+                Test your knowledge with 10 amazing fun facts!
+            </p>
+            <button class="start-btn" onclick="startQuiz()">Start Quiz</button>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div class="quiz-container active">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
+            </div>
+            <div class="score-display">
+                <div class="score-item">Question: <span id="questionNumber">1</span>/10</div>
+                <div class="score-item">✓ Correct: <span id="correctCount">0</span></div>
+                <div class="score-item">✗ Wrong: <span id="wrongCount">0</span></div>
+            </div>
+
+            <div class="fact-box">
+                <div class="fact-text" id="factText">A day on Venus is longer than a year on Venus.</div>
+                <div class="question">Is this statement true or false?</div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-true" id="trueBtn" onclick="answerQuestion(true)" style="opacity: 1; background: rgb(76, 175, 80);">True</button>
+                <button class="btn btn-false" id="falseBtn" onclick="answerQuestion(false)" style="opacity: 1; background: rgb(244, 67, 54);">False</button>
+            </div>
+
+            <div class="feedback" id="feedback">
+                <div id="feedbackText"></div>
+                <div class="explanation" id="explanation"></div>
+            </div>
+
+            <button class="next-btn" id="nextBtn" onclick="nextQuestion()">Next Question</button>
+        </div>
+
+        <!-- Results Screen -->
+        <div class="results-container" id="resultsContainer">
+            <div class="emoji" id="resultEmoji"></div>
+            <div class="final-score" id="finalScore"></div>
+            <div class="results-message" id="resultsMessage"></div>
+            <button class="restart-btn" onclick="restartQuiz()">Try Again</button>
+        </div>
+    </div>
+
+    <script>
+        const quizFacts = [
+            {
+                fact: "Honey never spoils. Archaeologists have found 3,000-year-old honey in Egyptian tombs that was still edible!",
+                answer: true,
+                explanation: "This is true! Honey's low moisture content and acidic pH prevent bacterial growth, making it virtually immortal."
+            },
+            {
+                fact: "Octopuses have three hearts - two pump blood to the gills, and one pumps it to the rest of the body.",
+                answer: true,
+                explanation: "Correct! The two branchial hearts pump blood through the gills, while the systemic heart pumps it to the body."
+            },
+            {
+                fact: "Bananas are berries, but strawberries are not!",
+                answer: true,
+                explanation: "True! Botanically speaking, berries develop from the ovary of a flower, so bananas qualify but strawberries don't."
+            },
+            {
+                fact: "A day on Venus is longer than a year on Venus.",
+                answer: true,
+                explanation: "This is true! Venus rotates very slowly (243 Earth days) but orbits the sun faster (225 Earth days)."
+            },
+            {
+                fact: "The dot above lowercase 'i' and 'j' is called a tittle.",
+                answer: true,
+                explanation: "Correct! 'Tittle' is the official typographical term for this small dot or mark."
+            },
+            {
+                fact: "Wombats have cube-shaped poop.",
+                answer: true,
+                explanation: "True! Their cube-shaped droppings help mark territory as they don't roll away easily."
+            },
+            {
+                fact: "Polar bears have black skin under their white fur.",
+                answer: true,
+                explanation: "Correct! Their skin is black to absorb heat, and their fur is actually transparent but appears white."
+            },
+            {
+                fact: "Carrots were originally purple, not orange.",
+                answer: true,
+                explanation: "True! Orange carrots were developed in the Netherlands in the 1600s through selective breeding."
+            },
+            {
+                fact: "Snakes can blink because they have eyelids like humans.",
+                answer: false,
+                explanation: "False! Snakes have no eyelids - they have a transparent scale called a spectacle covering their eyes."
+            },
+            {
+                fact: "The fingerprints of koalas are so similar to humans that they could confuse crime scene investigators.",
+                answer: true,
+                explanation: "This is true! Koala fingerprints are remarkably similar to human ones, even under a microscope."
+            },
+            {
+                fact: "Cleopatra lived closer to the invention of the iPhone than to the construction of the Great Pyramid.",
+                answer: true,
+                explanation: "True! The Great Pyramid was built ~2,580 BC, Cleopatra lived ~69-30 BC, and the iPhone was invented in 2007."
+            },
+            {
+                fact: "A group of flamingos is called a 'squadron'.",
+                answer: false,
+                explanation: "False! A group of flamingos is called a 'flamboyance' - much more fitting for such fabulous birds!"
+            },
+            {
+                fact: "Butterflies taste with their feet.",
+                answer: true,
+                explanation: "Correct! Butterflies have taste receptors on their feet to detect whether the leaf is good for laying eggs."
+            },
+            {
+                fact: "Seahorses are polygamous and change partners frequently.",
+                answer: false,
+                explanation: "False! Seahorses are actually monogamous and dance together daily to maintain their bond."
+            },
+            {
+                fact: "Cats have a third eyelid called the nictitating membrane.",
+                answer: true,
+                explanation: "True! This membrane helps protect the eye and keep it moist. You might see it when they're sleepy."
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let correctAnswers = 0;
+        let wrongAnswers = 0;
+        let answered = false;
+        let selectedQuestions = [];
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function startQuiz() {
+            selectedQuestions = shuffleArray([...quizFacts]).slice(0, 10);
+            currentQuestionIndex = 0;
+            correctAnswers = 0;
+            wrongAnswers = 0;
+            answered = false;
+
+            document.querySelector('.start-container').classList.add('hidden');
+            document.querySelector('.quiz-container').classList.add('active');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            answered = false;
+            const question = selectedQuestions[currentQuestionIndex];
+            document.getElementById('factText').textContent = question.fact;
+            document.getElementById('questionNumber').textContent = currentQuestionIndex + 1;
+            document.getElementById('progressFill').style.width = ((currentQuestionIndex / 10) * 100) + '%';
+
+            document.getElementById('trueBtn').disabled = false;
+            document.getElementById('falseBtn').disabled = false;
+            document.getElementById('trueBtn').style.opacity = '1';
+            document.getElementById('falseBtn').style.opacity = '1';
+            document.getElementById('trueBtn').style.background = '#4CAF50';
+            document.getElementById('falseBtn').style.background = '#f44336';
+
+            document.getElementById('feedback').classList.remove('show');
+            document.getElementById('nextBtn').classList.remove('show');
+
+            updateScoreDisplay();
+        }
+
+        function answerQuestion(userAnswer) {
+            if (answered) return;
+            answered = true;
+
+            const question = selectedQuestions[currentQuestionIndex];
+            const isCorrect = userAnswer === question.answer;
+
+            document.getElementById('trueBtn').disabled = true;
+            document.getElementById('falseBtn').disabled = true;
+
+            const feedback = document.getElementById('feedback');
+            const feedbackText = document.getElementById('feedbackText');
+            const explanation = document.getElementById('explanation');
+
+            if (isCorrect) {
+                correctAnswers++;
+                feedback.classList.remove('incorrect');
+                feedback.classList.add('correct');
+                feedbackText.textContent = '✓ Correct!';
+            } else {
+                wrongAnswers++;
+                feedback.classList.remove('correct');
+                feedback.classList.add('incorrect');
+                feedbackText.textContent = '✗ Incorrect!';
+            }
+
+            explanation.textContent = question.explanation;
+            feedback.classList.add('show');
+
+            if (question.answer) {
+                document.getElementById('trueBtn').style.opacity = '1';
+                document.getElementById('falseBtn').style.opacity = '0.3';
+            } else {
+                document.getElementById('falseBtn').style.opacity = '1';
+                document.getElementById('trueBtn').style.opacity = '0.3';
+            }
+
+            updateScoreDisplay();
+
+            if (currentQuestionIndex < 9) {
+                document.getElementById('nextBtn').classList.add('show');
+            } else {
+                setTimeout(showResults, 2000);
+            }
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < 10) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function updateScoreDisplay() {
+            document.getElementById('correctCount').textContent = correctAnswers;
+            document.getElementById('wrongCount').textContent = wrongAnswers;
+        }
+
+        function showResults() {
+            document.querySelector('.quiz-container').classList.remove('active');
+            document.getElementById('resultsContainer').classList.add('active');
+
+            const percentage = (correctAnswers / 10) * 100;
+            document.getElementById('finalScore').textContent = correctAnswers + '/10';
+            document.getElementById('progressFill').style.width = '100%';
+
+            let emoji = '🎉';
+            let message = 'Amazing! You are a fun facts expert!';
+
+            if (percentage === 100) {
+                emoji = '🏆';
+                message = 'Perfect Score! You\'re a genius!';
+            } else if (percentage >= 80) {
+                emoji = '🌟';
+                message = 'Excellent job! You know your facts!';
+            } else if (percentage >= 60) {
+                emoji = '👍';
+                message = 'Great effort! You\'re learning!';
+            } else if (percentage >= 40) {
+                emoji = '📚';
+                message = 'Good try! Keep learning!';
+            } else {
+                emoji = '💪';
+                message = 'Keep practicing! You\'ll improve!';
+            }
+
+            document.getElementById('resultEmoji').textContent = emoji;
+            document.getElementById('resultsMessage').textContent = message;
+        }
+
+        function restartQuiz() {
+            document.getElementById('resultsContainer').classList.remove('active');
+            document.querySelector('.start-container').classList.remove('hidden');
+            currentQuestionIndex = 0;
+            correctAnswers = 0;
+            wrongAnswers = 0;
+            answered = false;
+        }
+    </script>
+<!-- Code injected by live-server -->
+<script>
+	// <![CDATA[  <-- For SVG support
+	if ('WebSocket' in window) {
+		(function () {
+			function refreshCSS() {
+				var sheets = [].slice.call(document.getElementsByTagName("link"));
+				var head = document.getElementsByTagName("head")[0];
+				for (var i = 0; i < sheets.length; ++i) {
+					var elem = sheets[i];
+					var parent = elem.parentElement || head;
+					parent.removeChild(elem);
+					var rel = elem.rel;
+					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
+						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
+						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
+					}
+					parent.appendChild(elem);
+				}
+			}
+			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
+			var address = protocol + window.location.host + window.location.pathname + '/ws';
+			var socket = new WebSocket(address);
+			socket.onmessage = function (msg) {
+				if (msg.data == 'reload') window.location.reload();
+				else if (msg.data == 'refreshcss') refreshCSS();
+			};
+			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
+				console.log('Live reload enabled.');
+				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
+			}
+		})();
+	}
+	else {
+		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
+	}
+	// ]]>
+</script>
+
+</body></html>
